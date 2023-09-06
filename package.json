@@ -1,16 +1,16 @@
 {
-  "name": "vscode-massdriver-tools",
-  "displayName": "Massdriver Tools",
+  "name": "vscode-massdriver",
+  "displayName": "Massdriver",
   "publisher": "Massdriver",
-  "description": "VS Code extension for Massdriver tools.",
+  "description": "VS Code extension for Massdriver",
   "icon": "assets/icon.png",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mclacore/vscode-massdriver-tools"
+    "url": "https://github.com/massdriver-cloud/vscode-massdriver"
   },
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.81.0"
   },
   "categories": [
     "Other"
@@ -21,40 +21,50 @@
       "type": "object",
       "title": "Massdriver",
       "properties": {
-        "massdriver.api_key": {
+        "massdriver.token": {
           "type": "string",
           "default": "",
-          "title": "Massdriver API Key",
-          "description": "Enter your Massdriver API key here. You can find this in the Massdriver web app under Organization settings > Service Accounts."
+          "title": "Massdriver Service Account Token",
+          "description": "Enter your Massdriver service account token here. You can find this in the Massdriver web app under Organization settings > Service Accounts."
         },
-        "massdriver.org_id": {
+        "massdriver.org": {
           "type": "string",
           "default": "",
           "title": "Massdriver Organization ID",
-          "description": "Enter your Massdriver organization ID here. You can find this by hovering over your organization logo in the Massdriver canvas."
+          "description": "Enter your Massdriver organization ID here. You can find this in the Massdriver web app under Organization settings > Service Accounts > Copy Organization ID."
         }
       }
     },
     "commands": [
       {
         "command": "mass.bundleNew",
-        "title": "Massdriver: New Bundle"
+        "title": "New Bundle",
+        "category": "Massdriver"
       },
       {
         "command": "mass.bundlePublish",
-        "title": "Massdriver: Publish Bundle"
+        "title": "Publish Bundle",
+        "category": "Massdriver"
       },
       {
         "command": "mass.bundleBuild",
-        "title": "Massdriver: Build Bundle"
+        "title": "Build Bundle",
+        "category": "Massdriver"
       },
       {
         "command": "mass.imagePush",
-        "title": "Massdriver: Build & Push Image"
+        "title": "Build & Push Image",
+        "category": "Massdriver"
       },
       {
         "command": "mass.clean",
-        "title": "Massdriver: Clean"
+        "title": "Clean",
+        "category": "Massdriver"
+      },
+      {
+        "command": "mass.openWebview",
+        "title": "Open Webview",
+        "category": "Massdriver"
       }
     ]
   },

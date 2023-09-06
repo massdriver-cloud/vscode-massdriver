@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getApiKey } from '../settings';
+import { getToken } from '../settings';
 import { newBundleInfo } from '../inputs/bundleNew';
 
 async function bundleNew () {
@@ -9,7 +9,7 @@ async function bundleNew () {
     return;
   }
 
-  const apiKey = getApiKey();
+  const token = getToken();
   var currentDir = path.dirname(editor.document.uri.fsPath);
   const { exec } = require('child_process');
   // More JavaScript syntax, this is called "descuturing assignment"
@@ -22,8 +22,8 @@ async function bundleNew () {
     bundleOutputDirectory,
   } = await newBundleInfo();
 
-  if (apiKey) {
-    exec(`export MASSDRIVER_API_KEY=${apiKey} && cd ${currentDir} && mass bundle new -n "${bundleName}" -d "${bundleDescription}" -t ${bundleTemplate} -c "${connectionList}" -o "./${bundleOutputDirectory}"`, (err: any, stdout: any, stderr: any) => {
+  if (token) {
+    exec(`export MASSDRIVER_API_KEY=${token} && cd ${currentDir} && mass bundle new -n "${bundleName}" -d "${bundleDescription}" -t ${bundleTemplate} -c "${connectionList}" -o "./${bundleOutputDirectory}"`, (err: any, stdout: any, stderr: any) => {
       if (err) {
         console.error(`exec error: ${err}`);
       } else {

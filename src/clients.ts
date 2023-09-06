@@ -4,7 +4,6 @@ import * as semver from 'semver';
 import { asyncExec } from './utils';
 
 const minMassVersion = "0.4.8";
-const minGoVersion = '1.18';
 const minTerraformVersion = '1.0.0';
 
 // Massdriver CLI checking
@@ -59,7 +58,6 @@ const installOrUpdateMassdriverCli = async (massVersion: string): Promise<string
 
     while (true) {
         try {
-            await verifyGoVersion();
             const command = `${go} <placeholder command>`;
             console.log(`Testing cli installation with command: ${command}`);
             await asyncExec(command);
@@ -102,28 +100,18 @@ const installMassdriverCli = async (massVersion: string): Promise<MassInstall> =
     throw new Error('Massdriver CLI installation failed.');
 };
 
-// Golang checking
-const verifyGoVersion = async (): Promise<void> => {
-    const [goVersionResponse] = await asyncExec('go version');
-    console.log(goVersionResponse);
-    const goVersion = goVersionResponse.split(' ')[2];
-    if (semver.lt(goVersion, minGoVersion)) {
-        throw Error('Invalid Go version. Please install Go version 1.18 or higher.');
-    }
-};
-
-// Terraform checking
-const isTerraformInstalled = async () => {
+// Docker checking
+const isDockerInstalled = async () => {
     try {
-        await asyncExec('terraform version');
+        await asyncExec('docker version');
         return true;
     } catch (error) {
         return false;
     }
 };
 
-const terraformInstalled = async (): Promise<boolean> => {
-    const isInstalled = await isTerraformInstalled();
+const dockerInstalled = async (): Promise<boolean> => {
+    const isInstalled = await isDockerInstalled();
     return isInstalled;
 };
 
@@ -131,6 +119,6 @@ export {
     minTerraformVersion,
     MassInstall,
     installMassdriverCli,
-    terraformInstalled,
+    dockerInstalled,
     getMassVersion
 };
