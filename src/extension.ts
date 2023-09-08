@@ -7,6 +7,7 @@ import { bundleNew } from './mass/bundleNew';
 import { bundlePublish } from './mass/bundlePublish';
 import { imagePush } from './mass/imagePush';
 import { initStatusBarItem } from './interface';
+import { openWebview } from './webview';
 
 function activate(context: vscode.ExtensionContext) {
 
@@ -21,6 +22,7 @@ function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('mass.bundlePublish', bundlePublish),
 		vscode.commands.registerCommand('mass.clean', clean),
 		vscode.commands.registerCommand('mass.imagePush', imagePush),
+		vscode.commands.registerCommand('mass.openWebview', openWebview),
 	];
 	context.subscriptions.push(...disposables);
 

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { getApiKey } from '../settings';
+import { getToken } from '../settings';
 import { getOrgId } from '../settings';
 import { imageInfo } from '../inputs/imagePush';
 
@@ -11,7 +11,7 @@ async function imagePush () {
     return;
   }
 
-  const apiKey = getApiKey();
+  const token = getToken();
   const orgId = getOrgId();
   var currentDir = path.dirname(editor.document.uri.fsPath);
 
@@ -23,9 +23,9 @@ async function imagePush () {
     imageTag,
   } = await imageInfo();
 
-  if (apiKey) {
+  if (token) {
     if (orgId) {
-      const command = `export MASSDRIVER_API_KEY=${apiKey} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass image push ${imageNamespace}/${imageName} -r ${imageRegion} -a ${imageArtifactId} -t ${imageTag}`;
+      const command = `export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass image push ${imageNamespace}/${imageName} -r ${imageRegion} -a ${imageArtifactId} -t ${imageTag}`;
 
       if (fs.existsSync(currentDir + '/Dockerfile')) {
           const terminal = vscode.window.createTerminal({ name: 'Image push' });

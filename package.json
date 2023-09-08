@@ -1,70 +1,84 @@
 {
-  "name": "vscode-massdriver-tools",
-  "displayName": "Massdriver Tools",
+  "name": "vscode-massdriver",
+  "displayName": "Massdriver",
   "publisher": "Massdriver",
-  "description": "VS Code extension for Massdriver tools.",
+  "description": "VS Code extension for Massdriver",
   "icon": "assets/icon.png",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mclacore/vscode-massdriver-tools"
+    "url": "https://github.com/massdriver-cloud/vscode-massdriver"
   },
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.81.0"
   },
   "categories": [
     "Other"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension",
   "contributes": {
     "configuration": {
       "type": "object",
       "title": "Massdriver",
       "properties": {
-        "massdriver.api_key": {
+        "massdriver.token": {
           "type": "string",
           "default": "",
-          "title": "Massdriver API Key",
-          "description": "Enter your Massdriver API key here. You can find this in the Massdriver web app under Organization settings > Service Accounts."
+          "title": "Massdriver Service Account Token",
+          "description": "Enter your Massdriver service account token here. You can find this in the Massdriver web app under Organization settings > Service Accounts."
         },
-        "massdriver.org_id": {
+        "massdriver.org": {
           "type": "string",
           "default": "",
           "title": "Massdriver Organization ID",
-          "description": "Enter your Massdriver organization ID here. You can find this by hovering over your organization logo in the Massdriver canvas."
+          "description": "Enter your Massdriver organization ID here. You can find this in the Massdriver web app under Organization settings > Service Accounts > Copy Organization ID."
         }
       }
     },
     "commands": [
       {
         "command": "mass.bundleNew",
-        "title": "Massdriver: New Bundle"
+        "title": "New Bundle",
+        "category": "Massdriver"
       },
       {
         "command": "mass.bundlePublish",
-        "title": "Massdriver: Publish Bundle"
+        "title": "Publish Bundle",
+        "category": "Massdriver"
       },
       {
         "command": "mass.bundleBuild",
-        "title": "Massdriver: Build Bundle"
+        "title": "Build Bundle",
+        "category": "Massdriver"
       },
       {
         "command": "mass.imagePush",
-        "title": "Massdriver: Build & Push Image"
+        "title": "Build & Push Image",
+        "category": "Massdriver"
       },
       {
         "command": "mass.clean",
-        "title": "Massdriver: Clean"
+        "title": "Clean",
+        "category": "Massdriver"
+      },
+      {
+        "command": "mass.openWebview",
+        "title": "Open Webview",
+        "category": "Massdriver"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run package",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "test-compile": "tsc -p ./"
   },
   "dependencies": {
     "fs": "^0.0.1-security",
@@ -80,7 +94,11 @@
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "@vscode/test-electron": "^2.1.5",
+    "esbuild": "^0.19.2",
     "eslint": "^8.26.0",
-    "typescript": "^4.8.4"
+    "ts-loader": "^9.4.4",
+    "typescript": "^4.8.4",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   }
 }

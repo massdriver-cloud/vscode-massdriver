@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { getApiKey } from '../settings';
+import { getToken } from '../settings';
 import { getOrgId } from '../settings';
 
 async function bundlePublish () {
@@ -10,15 +10,15 @@ async function bundlePublish () {
     return;
   }
 
-  const apiKey = getApiKey();
+  const token = getToken();
   const orgId = getOrgId();
   var currentDir = path.dirname(editor.document.uri.fsPath);
   const { exec } = require('child_process');
-  const command = `export MASSDRIVER_API_KEY=${apiKey} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass bundle publish`;
+  const command = `export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass bundle publish`;
   // More JavaScript syntax, this is called "descuturing assignment"
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
 
-  if (apiKey) {
+  if (token) {
     if (orgId) {
       if (fs.existsSync(currentDir + '/massdriver.yaml')) {
         exec(command, (err: any) => {
