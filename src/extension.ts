@@ -7,7 +7,7 @@ import { bundleNew } from './mass/bundleNew';
 import { bundlePublish } from './mass/bundlePublish';
 import { imagePush } from './mass/imagePush';
 import { initStatusBarItem } from './interface';
-import { openWebview } from './webview';
+import { openWebview, getWebviewOptions } from './webview';
 
 function activate(context: vscode.ExtensionContext) {
 
@@ -22,9 +22,23 @@ function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('mass.bundlePublish', bundlePublish),
 		vscode.commands.registerCommand('mass.clean', clean),
 		vscode.commands.registerCommand('mass.imagePush', imagePush),
-		vscode.commands.registerCommand('mass.openWebview', openWebview),
+		vscode.commands.registerCommand('mass.openWebview', () => {
+			openWebview.createOrShow(context.extensionUri);
+		}),
 	];
 	context.subscriptions.push(...disposables);
+
+	if (vscode.window.registerWebviewPanelSerializer) {
+		// Make sure we register a serializer in activation event
+		vscode.window.registerWebviewPanelSerializer(openWebview.viewType, {
+			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+				console.log(`Got state: ${state}`);
+				// Reset the webview options so we use latest uri for `localResourceRoots`.
+				webviewPanel.webview.options = getWebviewOptions(context.extensionUri);
+				openWebview.revive(webviewPanel, context.extensionUri);
+			}
+		});
+	}
 
 	// Creates the custom on-click command for the status bar item
 	const onClickCommand = 'mass.openCommandPalette';
