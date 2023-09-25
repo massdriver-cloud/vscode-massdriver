@@ -15,7 +15,7 @@
   "categories": [
     "Other"
   ],
-  "main": "./dist/extension",
+  "main": "./out/extension.js",
   "contributes": {
     "configuration": {
       "type": "object",
