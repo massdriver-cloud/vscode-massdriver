@@ -6,14 +6,14 @@ import { getOrgId } from '../settings';
 import { imageInfo } from '../inputs/imagePush';
 
 async function imagePush () {
-  let editor = vscode.window.activeTextEditor;
+  const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return;
   }
 
   const token = getToken();
   const orgId = getOrgId();
-  var currentDir = path.dirname(editor.document.uri.fsPath);
+  const currentDir = path.dirname(editor.document.uri.fsPath);
 
   const {
     imageNamespace,
@@ -46,7 +46,7 @@ async function imagePush () {
   } else {
     vscode.window.showErrorMessage('No API key found in settings.');
   }
-};
+}
 
 export { 
   imagePush,

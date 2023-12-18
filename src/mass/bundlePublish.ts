@@ -3,17 +3,17 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { getToken } from '../settings';
 import { getOrgId } from '../settings';
+import { exec } from 'child_process';
 
 async function bundlePublish () {
-  let editor = vscode.window.activeTextEditor;
+  const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return;
   }
 
   const token = getToken();
   const orgId = getOrgId();
-  var currentDir = path.dirname(editor.document.uri.fsPath);
-  const { exec } = require('child_process');
+  const currentDir = path.dirname(editor.document.uri.fsPath);
   const command = `export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass bundle publish`;
   // More JavaScript syntax, this is called "descuturing assignment"
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
@@ -21,7 +21,7 @@ async function bundlePublish () {
   if (token) {
     if (orgId) {
       if (fs.existsSync(currentDir + '/massdriver.yaml')) {
-        exec(command, (err: any) => {
+        exec(command, (err: Error | null) => {
           if (err) {
             console.error(`exec error: ${err}`);
           } else {
@@ -30,7 +30,7 @@ async function bundlePublish () {
         });
       }
     } else if (fs.existsSync(currentDir + '/../massdriver.yaml')) {
-      exec(command, (err: any) => {
+      exec(command, (err: Error | null) => {
         if (err) {
           console.error(`exec error: ${err}`);
         } else {
@@ -43,7 +43,7 @@ async function bundlePublish () {
   } else {
     vscode.window.showErrorMessage('No API key found in settings.');
   }
-};
+}
 
 export { 
   bundlePublish,

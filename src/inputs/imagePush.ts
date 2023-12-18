@@ -36,7 +36,7 @@ async function imageInfo() {
 
   const imageRegion = await vscode.window.showInputBox({
     title: 'Image Region',
-    prompt: 'Enter a region for your image',
+    prompt: 'Enter a cloud-specific region for your image',
     ignoreFocusOut: true,
     placeHolder: 'us-east-1'
   });
