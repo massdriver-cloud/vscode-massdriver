@@ -31,7 +31,7 @@ function activate(context: vscode.ExtensionContext) {
 	if (vscode.window.registerWebviewPanelSerializer) {
 		// Make sure we register a serializer in activation event
 		vscode.window.registerWebviewPanelSerializer(openWebview.viewType, {
-			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: vscode.WebviewPanelOnDidChangeViewStateEvent) {
 				console.log(`Got state: ${state}`);
 				// Reset the webview options so we use latest uri for `localResourceRoots`.
 				webviewPanel.webview.options = getWebviewOptions(context.extensionUri);

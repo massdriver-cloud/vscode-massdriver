@@ -69,8 +69,7 @@ class openWebview {
 		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
 		// Update the content based on view changes
-		this._panel.onDidChangeViewState(
-			e => {
+		this._panel.onDidChangeViewState(() => {
 				if (this._panel.visible) {
 					this._update();
 				}
