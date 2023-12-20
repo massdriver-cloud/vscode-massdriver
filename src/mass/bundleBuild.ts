@@ -14,11 +14,12 @@ function bundleBuild() {
   const token = getToken();
   const orgId = getOrgId();
   const currentDir = path.dirname(editor.document.uri.fsPath);
+  const command = `export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass bundle build`
 
   if (token) {
     if (orgId) {
       if (fs.existsSync(currentDir + '/massdriver.yaml')) {
-        exec(`export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass bundle build`, (err: Error | null) => {
+        exec(command, (err: Error | null) => {
           if (err) {
             console.error(`exec error: ${err.message}`);
           } else {
@@ -26,7 +27,7 @@ function bundleBuild() {
           }
         });
       } else if (fs.existsSync(currentDir + '/../massdriver.yaml')) {
-        exec(`cd ${currentDir} && cd .. && export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && mass bundle build`, (err: Error | null) => {
+        exec(`cd ${currentDir} && cd .. && ${command}`, (err: Error | null) => {
           if (err) {
             console.error(`exec error: ${err.message}`);
           } else {

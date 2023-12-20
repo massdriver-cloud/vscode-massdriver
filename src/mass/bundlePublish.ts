@@ -15,8 +15,6 @@ async function bundlePublish () {
   const orgId = getOrgId();
   const currentDir = path.dirname(editor.document.uri.fsPath);
   const command = `export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass bundle publish`;
-  // More JavaScript syntax, this is called "descuturing assignment"
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
 
   if (token) {
     if (orgId) {

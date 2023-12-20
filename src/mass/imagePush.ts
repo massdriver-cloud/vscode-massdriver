@@ -26,7 +26,6 @@ async function imagePush () {
   if (token) {
     if (orgId) {
       const command = `export MASSDRIVER_API_KEY=${token} && export MASSDRIVER_ORG_ID=${orgId} && cd ${currentDir} && mass image push ${imageNamespace}/${imageName} -r ${imageRegion} -a ${imageArtifactId} -t ${imageTag}`;
-
       if (fs.existsSync(currentDir + '/Dockerfile')) {
           const terminal = vscode.window.createTerminal({ name: 'Image push' });
           terminal.show();

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as semver from 'semver';
 import { asyncExec } from './utils';
 
-const minMassVersion = "0.4.8";
+const minMassVersion = "1.5.15";
 const minTerraformVersion = '1.0.0';
 
 // Massdriver CLI checking

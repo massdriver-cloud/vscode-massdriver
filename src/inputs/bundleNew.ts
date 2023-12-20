@@ -42,8 +42,8 @@ const bundleConnectionList = [
   'sftp-authentication',
 ];
 
-const modifiedBundleConnectionList = bundleConnectionList.map(connectionName => {
-  return `massdriver/${connectionName}`;
+const modifiedBundleConnectionList = bundleConnectionList.map(selectedConnection => {
+  return `massdriver/${selectedConnection}`;
 });
 
 const bundleTemplateList = [
@@ -117,7 +117,7 @@ async function newBundleInfo() {
       placeHolder: 'my_connection'
     });
   
-    connectionPairs.push(`${selectedConnection}=${connectionName}`);
+    connectionPairs.push(`${connectionName}=${selectedConnection}`);
   }
   
   const connectionList = connectionPairs.join(',');
