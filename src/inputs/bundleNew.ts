@@ -1,50 +1,50 @@
 import * as vscode from 'vscode';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
+import { getOrgId } from '../settings';
+import { getToken } from '../settings';
 
-const bundleConnectionList = [
-  'aws-api-gateway-rest-api',
-  'aws-ecs-cluster',
-  'aws-dynamodb-table',
-  'aws-dynamodb-stream',
-  'aws-efs-file-system',
-  'aws-eventbridge',
-  'aws-eventbridge-rule',
-  'aws-iam-role',
-  'aws-s3-bucket',
-  'aws-sns-topic',
-  'aws-sqs-queue',
-  'aws-vpc',
-  'azure-cognitive-service-language',
-  'azure-cognitive-service-openai',
-  'azure-communication-service',
-  'azure-event-hubs',
-  'azure-fhir-service',
-  'azure-machine-learning-workspace',
-  'azure-service-principal',
-  'azure-storage-account-blob',
-  'azure-storage-account-data-lake',
-  'azure-virtual-network',
-  'cosmosdb-sql-authentication',
-  'elasticsearch-authentication',
-  'gcp-bucket-https',
-  'gcp-cloud-function',
-  'gcp-firebase-authentication',
-  'gcp-global-network',
-  'gcp-pubsub-subscription',
-  'gcp-pubsub-topic',
-  'gcp-service-account',
-  'gcp-subnetwork',
-  'kafka-authentication',
-  'kubernetes-cluster',
-  'mongo-authentication',
-  'mysql-authentication',
-  'postgresql-authentication',
-  'redis-authentication',
-  'sftp-authentication',
-];
+interface ArtifactDefinition {
+  name: string;
+}
 
-const modifiedBundleConnectionList = bundleConnectionList.map(selectedConnection => {
-  return `massdriver/${selectedConnection}`;
+const gql_uri = 'https://api.massdriver.cloud/api/graphql';
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri: gql_uri,
+  headers: {
+    Authorization: `Bearer ${getToken()}`,
+  }
 });
+const getArtifactDefinitions = gql`
+  query GetArtifactDefinitions($organizationId: ID!) {
+    artifactDefinitions(organizationId: $organizationId) {
+      name
+    }
+  }`;
+
+async function fetchArtifactNames(organizationId: string | undefined): Promise<string[]> {
+  try {
+    const { data } = await client.query({
+      query: getArtifactDefinitions,
+      variables: { organizationId },
+    });
+
+    const artifactDefinitions: ArtifactDefinition[] = data.artifactDefinitions;
+
+    const artifactNames: string[] = artifactDefinitions.map((artifact) => artifact.name);
+    artifactNames.sort();
+
+    // filter out api and draft-node artifact definitions
+    const filteredNames = artifactNames.filter((name) => {
+      return !["massdriver/api", "massdriver/draft-node"].includes(name);
+    });
+
+    return filteredNames;
+  } catch (error) {
+    console.error('Error fetching artifact names:', error);
+    throw error;
+  }
+}
 
 const bundleTemplateList = [
   'aws-api-gateway-lambda',
@@ -96,17 +96,20 @@ async function newBundleInfo() {
     throw new Error('Operation cancelled.');
   }
 
-  const selectedConnections = await vscode.window.showQuickPick(modifiedBundleConnectionList, {
+  const organizationId = getOrgId();
+  const filteredNames = await fetchArtifactNames(organizationId);
+
+  const selectedConnections = await vscode.window.showQuickPick(filteredNames, {
     title: 'Select connections to add to bundle',
     ignoreFocusOut: true,
     canPickMany: true,
     placeHolder: 'Optional'
   });
-  
+
   if (!selectedConnections) {
     throw new Error('Operation cancelled.');
   }
-  
+
   const connectionPairs: string[] = [];
 
   for (const selectedConnection of selectedConnections) {
@@ -139,8 +142,9 @@ async function newBundleInfo() {
     bundleTemplate,
     connectionList,
     bundleOutputDirectory,
-  };
+  }
 }
+
 
 export {
   newBundleInfo
