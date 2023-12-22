@@ -1,38 +1,37 @@
 import * as vscode from 'vscode';
 
-console.log("Terminals: " + (<any>vscode.window).terminals.length);
+console.log("Terminals:");
 
-vscode.window.onDidOpenTerminal(terminal => {
-  console.log("Terminal opened. Total count: " + (<any>vscode.window).terminals.length);
+vscode.window.onDidOpenTerminal(() => {
+	console.log("Terminal");
 });
 
 vscode.window.onDidOpenTerminal((terminal: vscode.Terminal) => {
-  vscode.window.showInformationMessage(`onDidOpenTerminal, name: ${terminal.name}`);
+	vscode.window.showInformationMessage(`onDidOpenTerminal, name: ${terminal.name}`);
 });
 
-function selectTerminal() {
+async function selectTerminal() {
 	interface TerminalQuickPickItem extends vscode.QuickPickItem {
 		terminal: vscode.Terminal;
 	}
-	const terminals = <vscode.Terminal[]>(<any>vscode.window).terminals;
+	const terminals = vscode.window.terminals;
 	const items: TerminalQuickPickItem[] = terminals.map(t => {
 		return {
 			label: t.name,
 			terminal: t
 		};
 	});
-	return vscode.window.showQuickPick(items).then(item => {
-		return item ? item.terminal : undefined;
-	});
+	const item = await vscode.window.showQuickPick(items);
+	return item ? item.terminal : undefined;
 }
 
 function ensureTerminalExists(): boolean {
-	if ((<any>vscode.window).terminals.length === 0) {
+	if (!vscode.window.terminals || vscode.window.terminals.length === 0) {
 		vscode.window.showErrorMessage('No active terminals');
 		return false;
 	}
 	return true;
-};
+}
 
 export {
   selectTerminal,

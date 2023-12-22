@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { initStatusBarItem, setMissingApiStatusBarItem, setMissingOrganizationStatusBarItem } from './interface';
 
+// assigns MASSDRIVER_API_KEY
 const getToken = (): string | undefined => {
     const configuration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('massdriver');
     const token = configuration.get<string>('token');
@@ -14,6 +15,7 @@ const getToken = (): string | undefined => {
     return token;
 };
 
+// assigns MASSDRIVER_ORG_ID
 const getOrgId = (): string | undefined => {
     const configuration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('massdriver');
     const orgId = configuration.get<string>('org');

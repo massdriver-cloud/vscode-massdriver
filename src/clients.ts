@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as semver from 'semver';
 import { asyncExec } from './utils';
 
-const minMassVersion = "0.4.8";
+const minMassVersion = "1.5.15";
 const minTerraformVersion = '1.0.0';
 
 // Massdriver CLI checking
@@ -49,21 +49,25 @@ const getMassExecutablePath = async (): Promise<string> => {
     return path.join(goPath.trim(), 'bin', 'mass');
 };
 
-const installOrUpdateMassdriverCli = async (massVersion: string): Promise<string | null> => {
+const installOrUpdateMassdriverCli = async (): Promise<string | undefined> => {
     vscode.window.showInformationMessage('Trying to install Massdriver CLI');
 
     let firstTry = true;
-    let go = 'go';
-    let sudo = 'sudo';
+    const go = 'go';
+    const sudo = 'sudo';
+    const mass_url = 'github.com/massdriver-cloud/mass';
 
-    while (true) {
+    while (firstTry) {
         try {
-            const command = `${go} <placeholder command>`;
-            console.log(`Testing cli installation with command: ${command}`);
-            await asyncExec(command);
+            const isInstalled = await isMassdriverCliInstalled();
+            if (!isInstalled) {
+                const command = `${go} install ${mass_url}`;
+                console.log(`Testing cli installation with command: ${command}`);
+                await asyncExec(command);
+            }
 
             let massPath;
-            if (await isMassdriverCliInstalled()) {
+            if (isInstalled) {
                 massPath = 'mass';
             } else {
                 massPath = await getMassExecutablePath();
@@ -74,11 +78,11 @@ const installOrUpdateMassdriverCli = async (massVersion: string): Promise<string
             vscode.window.showErrorMessage(`Failed to install Massdriver CLI. Error:`, (error as Error).message);
             if (firstTry) {
                 console.log('Retrying with sudo');
-                const command = (`${sudo} ${go} <placeholder command>`);
+                const command = `${sudo} ${go} ${mass_url}`;
                 await asyncExec(command);
                 firstTry = false;
             } else {
-                return null;
+                return undefined;
             }
         }
     }
@@ -89,16 +93,20 @@ interface MassInstall {
 }
 
 const installMassdriverCli = async (massVersion: string): Promise<MassInstall> => {
-    const is = await installOrUpdateMassdriverCli(massVersion);
-
-    if (await isMassdriverCliInstalled()) {
-        vscode.window.showWarningMessage('Massdriver CLI is already installed. Skipping installation.');
-        return { version: massVersion };
-    } else {
-        vscode.window.showErrorMessage('Could not find Massdriver CLI. Please install it manually.');
+    try {
+        if (await isMassdriverCliInstalled()) {
+            vscode.window.showWarningMessage('Massdriver CLI is already installed. Skipping installation.');
+            return { version: massVersion };
+        } else {
+            await installOrUpdateMassdriverCli();
+            return { version: massVersion };
+        }
+    } catch (error) {
+        vscode.window.showErrorMessage('Failed to install/update Massdriver CLI. Error:', (error as Error).message);
+        throw new Error('Massdriver CLI installation failed.');
     }
-    throw new Error('Massdriver CLI installation failed.');
 };
+
 
 // Docker checking
 const isDockerInstalled = async () => {
