@@ -54,11 +54,6 @@ async function fetchArtifactNames(organizationId: string | undefined): Promise<s
 
 // fetches list of bundle templates and returns an array of template names
 async function bundleTemplateList(): Promise<string[]> {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    return [];
-  }
-
   const templateDir = path.join(os.homedir(), '.massdriver', 'massdriver-cloud', 'application-templates');
 
   return new Promise((resolve, reject) => {
