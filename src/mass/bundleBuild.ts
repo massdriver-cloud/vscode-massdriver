@@ -40,6 +40,8 @@ function bundleBuild() {
     } else {
       vscode.window.showErrorMessage('No organization ID found in settings.');
     }
+  } else {
+    vscode.window.showErrorMessage('No API key found in settings.');
   }
 }
 

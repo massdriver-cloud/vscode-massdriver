@@ -62,8 +62,8 @@
         "category": "Massdriver"
       },
       {
-        "command": "mass.openWebview",
-        "title": "Open Webview",
+        "command": "mass.devServer",
+        "title": "Start Dev Server",
         "category": "Massdriver"
       }
     ]
