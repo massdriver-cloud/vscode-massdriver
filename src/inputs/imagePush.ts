@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 
 async function imageInfo() {
+  // set image namespace
   const imageNamespace = await vscode.window.showInputBox({
     title: 'Image Namespace',
     prompt: 'Enter a namespace for your image',
@@ -12,6 +13,7 @@ async function imageInfo() {
     throw new Error('Operation cancelled.');
   }
 
+  // set image name
   const imageName = await vscode.window.showInputBox({
     title: 'Image Name',
     prompt: 'Enter a name for your image',
@@ -23,6 +25,7 @@ async function imageInfo() {
     throw new Error('Operation cancelled.');
   }
 
+  // set image tag
   const imageTag = await vscode.window.showInputBox({
     title: 'Image Tag',
     prompt: 'Enter a tag for your image',
@@ -34,6 +37,7 @@ async function imageInfo() {
     throw new Error('Operation cancelled.');
   }
 
+  // set image cloud region
   const imageRegion = await vscode.window.showInputBox({
     title: 'Image Region',
     prompt: 'Enter a cloud-specific region for your image',
@@ -45,6 +49,7 @@ async function imageInfo() {
     throw new Error('Operation cancelled.');
   }
 
+  // set Massdriver artifact ID
   const imageArtifactId = await vscode.window.showInputBox({
     title: 'Image Artifact ID',
     prompt: 'Enter your Massdriver cloud credential artifact ID',

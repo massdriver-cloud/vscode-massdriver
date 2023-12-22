@@ -7,6 +7,7 @@ import { exec, ChildProcess } from 'child_process';
 
 let massServerProcess: ChildProcess | null = null;
 
+// starts the mass dev server
 function startMassServer(callback: () => void) {
 	const editor = vscode.window.activeTextEditor;
   if (!editor) {
@@ -47,6 +48,7 @@ function startMassServer(callback: () => void) {
 	}
 }
 
+// closes the mass dev server
 function stopMassServer() {
 	if (massServerProcess) {
 		massServerProcess.kill();
@@ -149,7 +151,7 @@ class openWebview {
 	}
 
 	private _getHtmlForWebview() {
-		const iframeSrc = 'http://127.0.0.1:8080/hello-agent';
+		const iframeSrc = 'http://127.0.0.1:8080/hello-agent'; // local path to dev server
 	
 		this._panel.webview.html = `
 			<!DOCTYPE html>

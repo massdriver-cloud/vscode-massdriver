@@ -1,28 +1,34 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
 import { getOrgId } from '../settings';
 import { getToken } from '../settings';
+import { exec } from 'child_process';
 
-interface ArtifactDefinition {
-  name: string;
-}
-
-const gql_uri = 'https://api.massdriver.cloud/api/graphql';
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  uri: gql_uri,
-  headers: {
-    Authorization: `Bearer ${getToken()}`,
-  }
-});
-const getArtifactDefinitions = gql`
-  query GetArtifactDefinitions($organizationId: ID!) {
-    artifactDefinitions(organizationId: $organizationId) {
-      name
-    }
-  }`;
-
+// fetches list of artifact definitions and returns an array of artifact names
 async function fetchArtifactNames(organizationId: string | undefined): Promise<string[]> {
+  interface ArtifactDefinition {
+    name: string;
+  }
+  
+  const gql_uri = 'https://api.massdriver.cloud/api/graphql';
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: gql_uri,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    }
+  });
+  
+  const getArtifactDefinitions = gql`
+    query GetArtifactDefinitions($organizationId: ID!) {
+      artifactDefinitions(organizationId: $organizationId) {
+        name
+      }
+    }`;
+
   try {
     const { data } = await client.query({
       query: getArtifactDefinitions,
@@ -46,24 +52,41 @@ async function fetchArtifactNames(organizationId: string | undefined): Promise<s
   }
 }
 
-const bundleTemplateList = [
-  'aws-api-gateway-lambda',
-  'aws-ecs-service',
-  'aws-lambda',
-  'azure-app-service',
-  'azure-function-app',
-  'gcp-cloud-function',
-  'gcp-cloud-run',
-  'gcp-vm',
-  'kubernetes-cronjob',
-  'kubernetes-deployment',
-  'kubernetes-job',
-  'phoenix-kubernetes',
-  'rails-kubernetes',
-  'terraform-module'
-];
+// fetches list of bundle templates and returns an array of template names
+async function bundleTemplateList(): Promise<string[]> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    return [];
+  }
+
+  const templateDir = path.join(os.homedir(), '.massdriver', 'massdriver-cloud', 'application-templates');
+
+  return new Promise((resolve, reject) => {
+    exec(`mass bundle template refresh`, async (err: Error | null) => {
+      if (err) {
+        console.error(`exec error: ${err.message}`);
+      } else {
+        vscode.window.showInformationMessage('Bundle templates refreshed successfully');
+
+        try {
+          const templateFiles = await fs.promises.readdir(templateDir);
+
+          const templateDirectories = templateFiles.filter((file) =>
+            fs.statSync(path.join(templateDir, file)).isDirectory() && file !== '.git'
+          );
+
+          resolve(templateDirectories);
+        } catch (error) {
+          console.error('Error fetching bundle templates:', error);
+          reject(error);
+        }
+      }
+    });
+  });
+}
 
 async function newBundleInfo() {
+  // set bundle name
   const bundleName = await vscode.window.showInputBox({
     title: 'Bundle Name',
     prompt: 'Enter the name of the new bundle',
@@ -75,6 +98,7 @@ async function newBundleInfo() {
     throw new Error('Operation cancelled.');
   }
 
+  // set bundle description
   const bundleDescription = await vscode.window.showInputBox({
     title: 'Bundle Description',
     prompt: 'Enter a description for the new bundle',
@@ -86,7 +110,14 @@ async function newBundleInfo() {
     throw new Error('Operation cancelled.');
   }
 
-  const bundleTemplate = await vscode.window.showQuickPick(bundleTemplateList, {
+  const templateList = await bundleTemplateList();
+
+  if (!templateList) {
+    throw new Error('No templates found.');
+  }
+
+  // select bundle template
+  const bundleTemplate = await vscode.window.showQuickPick(templateList, {
     title: 'Bundle Template',
     ignoreFocusOut: true,
     placeHolder: 'Select your application template',
@@ -96,6 +127,7 @@ async function newBundleInfo() {
     throw new Error('Operation cancelled.');
   }
 
+  // select connections
   const organizationId = getOrgId();
   const filteredNames = await fetchArtifactNames(organizationId);
 
@@ -112,6 +144,7 @@ async function newBundleInfo() {
 
   const connectionPairs: string[] = [];
 
+  // set connection names to match selected connections
   for (const selectedConnection of selectedConnections) {
     const connectionName = await vscode.window.showInputBox({
       title: 'Connection Name',
@@ -125,6 +158,7 @@ async function newBundleInfo() {
   
   const connectionList = connectionPairs.join(',');
 
+  // set bundle output directory
   const bundleOutputDirectory = await vscode.window.showInputBox({
     title: 'Bundle Output Directory',
     prompt: 'Enter the output directory for the new bundle',
@@ -144,7 +178,6 @@ async function newBundleInfo() {
     bundleOutputDirectory,
   }
 }
-
 
 export {
   newBundleInfo
